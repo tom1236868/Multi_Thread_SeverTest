@@ -102,8 +102,8 @@ class ClientHandler extends Thread{
         final int action_size = 2;
         //Elapsed Timer
         long start = 0, stop = 0;
-        long avgMean = 0, current = 0;
-        double avgMeanInSec = 0.0;
+        long avgMean = 0, innerAvgMean = 0, current = 0;
+        double avgMeanInSec = 0.0, innerAvgMeanInSec = 0.0;
         //File Manage
         int action_count = 0;
         String folderName = "./avgMean";
@@ -124,8 +124,8 @@ class ClientHandler extends Thread{
         String csvName = "./avgMean/" + threadID +".csv";
         String csvName1000 = "./avgMean/" + threadID +"_1000.csv";
         try {
-        	Files.write(Paths.get(csvName), "AvgMeanTime(sec)\n".getBytes());
-        	Files.write(Paths.get(csvName1000), "AvgMeanTime/1000 act (sec)\n".getBytes());
+        	Files.write(Paths.get(csvName), "AvgMeanTime(sec), Sever InnerTime\n".getBytes());
+        	Files.write(Paths.get(csvName1000), "AvgMeanTime/1000 act (sec), Sever InnerTime\n".getBytes());
         }
         catch (IOException e) {
 			e.printStackTrace();
@@ -143,7 +143,7 @@ class ClientHandler extends Thread{
             	avgMean = current*19/20 + avgMean/20;
             	avgMeanInSec = (double) avgMean/1000000000;
             	//System.out.println(avgMeanInSec + "s");
-            	String fout = avgMeanInSec + "\n";
+            	String fout = avgMeanInSec + ",";
             	Files.write(Paths.get(csvName), fout.getBytes(), StandardOpenOption.APPEND);
             	if(action_count++ >= 1000){
             		Files.write(Paths.get(csvName1000), fout.getBytes(), StandardOpenOption.APPEND);
@@ -267,6 +267,18 @@ class ClientHandler extends Thread{
         		default:
         			break;
         		}
+        	innerAvgMean = (start - stop)*19/20 + innerAvgMean/20;
+        	innerAvgMeanInSec = (double) innerAvgMean/1000000000;
+        	try {
+        		Files.write(Paths.get(csvName), (innerAvgMeanInSec +"\n").getBytes(), StandardOpenOption.APPEND);
+            	if(action_count++ >= 1000){
+            		Files.write(Paths.get(csvName1000), (innerAvgMeanInSec +"\n").getBytes(), StandardOpenOption.APPEND);
+            		action_count = 0;
+            	}
+        	}
+        	catch(IOException e){
+				e.printStackTrace();
+			}
         }
         try {
         	this.in.close();
