@@ -124,8 +124,8 @@ class ClientHandler extends Thread{
         String csvName = "./avgMean/" + threadID +".csv";
         String csvName1000 = "./avgMean/" + threadID +"_1000.csv";
         try {
-        	Files.write(Paths.get(csvName), "AvgMeanTime(sec), Sever InnerTime\n".getBytes());
-        	Files.write(Paths.get(csvName1000), "AvgMeanTime/1000 act (sec), Sever InnerTime\n".getBytes());
+        	Files.write(Paths.get(csvName), "AvgMeanTime(ms), Sever InnerTime\n".getBytes());
+        	Files.write(Paths.get(csvName1000), "AvgMeanTime/1000 act (ms), Sever InnerTime\n".getBytes());
         }
         catch (IOException e) {
 			e.printStackTrace();
@@ -140,8 +140,8 @@ class ClientHandler extends Thread{
         		stop = System.nanoTime();
         		if(start != 0)
         			current = stop - start;
-            	avgMean = current*19/20 + avgMean/20;
-            	avgMeanInSec = (double) avgMean/1000000000;
+            	avgMean = current/20 + avgMean*19/20;
+            	avgMeanInSec = (double) avgMean/1000000;
             	//System.out.println(avgMeanInSec + "s");
             	String fout = avgMeanInSec + ",";
             	Files.write(Paths.get(csvName), fout.getBytes(), StandardOpenOption.APPEND);
@@ -267,8 +267,8 @@ class ClientHandler extends Thread{
         		default:
         			break;
         		}
-        	innerAvgMean = (start - stop)*19/20 + innerAvgMean/20;
-        	innerAvgMeanInSec = (double) innerAvgMean/1000000000;
+        	innerAvgMean = (start - stop)/20 + innerAvgMean*19/20;
+        	innerAvgMeanInSec = (double) innerAvgMean/1000000;
         	try {
         		Files.write(Paths.get(csvName), (innerAvgMeanInSec +"\n").getBytes(), StandardOpenOption.APPEND);
             	if(action_count++ >= 1000){
